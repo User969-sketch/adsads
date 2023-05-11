@@ -1,0 +1,45 @@
+html {
+	width: 100%;
+	height: 100%;
+}
+
+
+body {
+	height: 100%;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	position:absolute; top:0; bottom:0; right:0; left:0;
+	margin: 0;
+	background-color: #000000;
+  overflow: hidden;
+}
+
+.actbutton:active {
+	background: white !important; 
+}
+.actbutton:active::before {
+	box-shadow: 0 0 0 2px #b18597, 0 0 #ffe3e2 !important;
+}
+
+#videoContainer {
+	background-color: #00000000;
+}
+
+#video {
+	width: 100vw;
+	height: 100vh;
+	display: block;
+	margin: auto;
+}
+	
+#joyDiv {
+	width: max(20vw, 20vh);
+	height: max(20vw, 20vh);
+	max-width: 200px;
+	max-height: 200px;
+	position: absolute;
+	bottom: 1%;
+	right: 7.5%;
+}
