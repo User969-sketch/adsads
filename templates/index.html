@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Client {{ ID }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script src="/static/joystick.js"></script>
+
+    <!-- Moving Control Buttons Style -->
+	<style type="text/css">
+	   .borderButtonMC {
+	      width: 25%; height: 33%; border: 0px; background-color: white; background-color: rgba(0, 0, 0, 0);
+	   }
+
+	   .mainButtonMCTemplate {
+	      width: 33%; height: 33%; border: 1px solid;
+	   }
+
+	   .mainButtonMCTemplateTopAndBottom {
+	      width: 50%; height: 33%; border: 1px solid; font-size: 24px;
+	   }
+
+	   /*Buttons of main (moving) control*/
+	   #forwardMoveButton {
+	      border-radius: 50% 50% 170% 170%;
+	   }
+
+	   #leftMoveButton {
+	      border-radius: 50% 100% 100% 50%;
+	   }
+
+	   #stopMoveButton {
+	      background-color: #A0A0A0; border-radius: 50%;
+	   }
+
+	   #rightMoveButton {
+	      border-radius: 100% 50% 50% 100%;
+	   }
+
+	   #backMoveButton {
+	      border-radius: 170% 170% 50% 50%;
+	   }
+	</style>
+</head>
+<body>
+	<!-- Video Stream Field -->
+	<div id="videoContainer" style="background-color: #00000000;"><img id="video" src="{{ url_for('videostream') }}" style="{{imgscale}}"></div>
+
+	<!-- Aim marker -->
+	<div style="text-align: center;"><strong id="mainmarker" style="font-size: 48px; position: absolute; margin-left: -0.3em; top: 50%; margin-top: -0.58em; color: red;">+</strong></div>
+
+	<!-- Main JoyStick to move 
+	<div id="joyDiv"></div> -->
+
+	<!-- Active button -->
+	<button type="button" style="border: none; border-radius: 7px; background: #CC0000; cursor: pointer; font-weight: bold; width: 5%; height: 12%; position: absolute; top: 4%; left: 2.5%;" onclick="window.location.href = '/openclosecontrolmenu';"></button>
+
+	<!-- Guard button -->
+	<button class="actbutton" type="button" style="border: solid; border-color: black; border-radius: 45%; background: #99CCFF; cursor: pointer; font-weight: bold; width: 5%; height: 10%; position: absolute; top: 32%; left: 2%;">G</button>
+
+	<!-- FixMark button -->
+	<button id="fillmarkbutton" type="button" style="border: solid; border-color: black; border-radius: 45%; background: #6666FF; cursor: pointer; font-weight: bold; width: 4.5%; height: 9%; position: absolute; top: 47%; left: 3.5%;">FM</button>
+
+	<!-- AutoMarkButton -->
+	<button id="autoaim" class="actbutton" type="button" style="border: solid; border-color: black; border-radius: 45%; background: #33FF33; cursor: pointer; font-weight: bold; width: 4%; height: 8%; position: absolute; top: 62%; left: 5%;">AM</button>
+
+	<!-- Reload button -->
+	<button class="actbutton" type="button" style="border: solid; border-color: black; border-radius: 45%; background: #808080; cursor: pointer; font-weight: bold; width: 5%; height: 10%; position: absolute; top: 4%; left: 92%;">R</button>
+
+	<!-- Zoom buttons -->
+	<button class="actbutton" style="position: absolute; background: #99CCF0; height: 8%; width: 4%; top: 23%; right: 3%; border: 2px solid; border-radius: 100% 100% 2% 2%; font-size: 1.7vw;" onclick='var xhttp = new XMLHttpRequest();xhttp.open("GET", "camzoomplus", true); xhttp.send();'>+</button>
+	<button class="actbutton" style="position: absolute; background: #99CCFF; height: 8%; width: 4%; top: 31.7%; right: 3%; border: 2px solid; border-radius: 2% 2% 100% 100%; font-size: 1.8vw;" onclick='var xhttp = new XMLHttpRequest();xhttp.open("GET", "camzoomminus", true); xhttp.send();'>-</button>
+
+	<!-- CloseCam button -->
+	<button class="actbutton" type="button" style="border: solid; border-color: black; border-radius: 45%; background: #99FFFF; cursor: pointer; font-weight: bold; width: 4.5%; height: 9%; position: absolute; top: 45%; left: 92%;" onclick='var xhttp = new XMLHttpRequest();xhttp.open("GET", "changecamdefbutton", true); xhttp.send();'>DC</button>
+
+	<!-- Fire button -->
+	<button class="actbutton" type="button" style="border: solid; border-color: black; border-radius: 45%; background: #FF8000; cursor: pointer; font-weight: bold; width: 5.3%; height: 10.3%; position: absolute; top: 58%; left: 90%;" onclick='var xhttp = new XMLHttpRequest();xhttp.open("GET", "firebuttonact", true); xhttp.send();'>FIRE</button>
+
+	<!-- Gun control buttons -->
+	<style>
+		.aimControlButton {      
+		    content: '';
+		    position: absolute;
+		    border-radius: 180px;     
+		}
+
+		#aimControlButtonTop {
+		    border: 60px solid transparent;
+		    border-top: 70px solid #A6DDFD;
+			left: 15%;
+			top: 71%;
+		}
+
+		#aimControlButtonLeft {
+		    border: 65px solid transparent;
+		    border-left: 70px solid #A6DDFD;
+			left: 14%;
+			top: 72.5%;
+		}
+
+		#aimControlButtonRight {
+		    border: 65px solid transparent;
+		    border-right: 70px solid #A6DDFD;
+			left: 15%;
+			top: 72.5%;
+		}
+
+		#aimControlButtonBottom {
+		    border: 60px solid transparent;
+		    border-bottom: 70px solid #A6DDFD;
+			left: 15%;
+			top: 74%
+		}
+	</style>
+
+<!-- 	<div id="aimControlButtonTop" class="aimControlButton"></div>
+	<div id="aimControlButtonLeft" class="aimControlButton"></div>
+	<div id="aimControlButtonRight" class="aimControlButton"></div>
+	<div id="aimControlButtonBottom" class="aimControlButton"></div>
+	<button style="border-radius: 50%; width: 2.5%; height: 5%; left: 17.6%; top: 78.25%; position: absolute;"></button>
+ -->
+
+	<!-- Move control buttons -->
+	<style>
+		.joystick-container {
+		  display: flex;
+		  justify-content: center;
+		  align-items: center;
+		  height: 300px;
+		}
+
+		.joystick {
+		  position: absolute;
+		  top: 80%;
+		  left: 68%;
+		  width: 150px;
+		  height: 150px;
+		  background-color: rgba(255, 255, 255, 0.1);
+		  border-radius: 10px;
+		}
+
+		.joystick button {
+		  display: block;
+		  position: absolute;
+		  width: 50px;
+		  height: 50px;
+		  border-radius: 10px;
+		  border: none;
+		}
+
+		#forwardMoveButton {
+		  background-color: #4CAF50;
+		  top: 0;
+		  left: 50px;
+		}
+
+		#leftMoveButton {
+		  background-color: #4CAF50;
+		  top: 50px;
+		  left: 0;
+		}
+
+		#rightMoveButton {
+		  background-color: #4CAF50;
+		  top: 50px;
+		  right: 0;
+		}
+
+		#backMoveButton {
+		  background-color: #4CAF50;
+		  bottom: 0;
+		  left: 50px;
+		}
+
+		#stopMoveButton {
+		  background-color: red;
+		  top: 50px;
+		  right: 50px;
+		}
+	</style>
+
+	<div class="joystick-container">
+	  <div class="joystick">
+	    <button id="forwardMoveButton"> </button>
+	    <button id="leftMoveButton"> </button>
+	    <button id="stopMoveButton"> </button>
+	    <button id="rightMoveButton"> </button>
+	    <button id="backMoveButton"> </button>
+	  </div>
+	</div>
+
+	<!-- BUTTONS CONTROL -->
+
+	<!-- Marker`s Style -->
+	<style type="text/css">
+		.divMarker {
+			position: absolute; 
+			border: 10px solid #C0C0C0; 
+			height: 2%; 
+			width: 1%; 
+			border-radius: 50%; 
+			background-color: black;
+		}
+	</style>
+
+	<!-- Gun control script -->
+	<script type="text/javascript">
+		function buttonControl(id) {
+			var button = document.getElementById(id);
+		    var buttonTimer;
+		    var ifGripped = false;
+
+		    button.onmousedown = function(){
+		        buttonTimer = setTimeout( function(){
+		   			var ifPinch = true;
+
+		            var xhttp = new XMLHttpRequest();
+		            xhttp.open("GET", "gunmove?type=grided&id=" + id, true);
+		            xhttp.send();
+		        }, 500);
+		    };
+
+		    button.onmouseup = function(){
+		        clearTimeout(buttonTimer);
+
+				var xhttp = new XMLHttpRequest();
+		        xhttp.open("GET", "gunmove?type=buttonup&id=" + id, true);
+		        xhttp.send();
+
+		    	var ifPinch = false;
+		    };
+		}
+
+		// top buttons
+		buttonControl('guncontrolbtn_ltop');
+		buttonControl('guncontrolbtn_top');
+		buttonControl('guncontrolbtn_rtop');
+
+		// center buttons
+		buttonControl('guncontrolbtn_left');
+		buttonControl('guncontrolbtn_right');
+
+		// bottom buttons
+		buttonControl('guncontrolbtn_lbottom');
+		buttonControl('guncontrolbtn_bottom');
+		buttonControl('guncontrolbtn_rbottom');
+	</script>
+
+	<!-- AutoAim Button -->
+	<!-- Fix Mark Button Control -->
+	<script type="text/javascript">
+		var mainImageField = document.getElementById('videoContainer');
+		var autoAimButton = document.getElementById('autoaim');
+		var fillMarkButton = document.getElementById('fillmarkbutton');
+		var mainMarker = document.getElementById('mainmarker');
+
+		var ifAutoAimActive = false;
+		var newMarkerX;
+		var newMarkerY;
+		let markerDiv;
+
+		var ifAutoMarkButtonPressed = false;
+		var markerX;
+		var markerY;
+
+
+		fillMarkButton.onmouseup = function() {
+			if (!ifAutoAimActive) ifAutoMarkButtonPressed = !(ifAutoMarkButtonPressed);
+
+			if (ifAutoMarkButtonPressed) {
+				fillMarkButton.style.backgroundColor = "#00FFFF";
+			} else {
+				fillMarkButton.style.backgroundColor = "#6666FF";
+			}
+		};
+
+		autoAimButton.onmouseup = function() {
+			if (!ifAutoMarkButtonPressed) ifAutoAimActive = !(ifAutoAimActive);
+
+			if (ifAutoAimActive) {
+				autoAimButton.style.backgroundColor = "#00FFFF";
+			} else {
+				autoAimButton.style.backgroundColor = "#33FF33";
+			}
+		}
+
+		mainImageField.onmouseup = function(event) {
+			if (ifAutoAimActive) {
+				newMarkerX = event.x;
+				newMarkerY = event.y;
+
+				if (markerDiv) {
+					markerDiv.remove();
+				}
+
+				markerDiv = document.createElement('div');
+				markerDiv.className = "divMarker";
+				markerDiv.style.top = String(newMarkerY - (0.02 * window.innerHeight)) + "px";
+				markerDiv.style.left = String(newMarkerX - (0.01 * window.innerWidth)) + "px";
+				document.body.append(markerDiv);
+
+				var xhttp = new XMLHttpRequest();
+				xhttp.open("GET", "autoaim?x=" + String(newMarkerX) + "&y=" + String(newMarkerY), true);
+				xhttp.send();
+			}
+
+			else{ 
+				if (ifAutoMarkButtonPressed) {
+					markerX = event.x;
+					markerY = event.y;
+
+					mainMarker.style.left = String(markerX) + "px";
+					mainMarker.style.top = String(markerY) + "px";
+
+					var xhttp = new XMLHttpRequest();
+					xhttp.open("GET", "updatemmcords?x=" + String(markerX) + "&y=" + String(markerY), true);
+					xhttp.send();
+				}
+			}
+
+		}
+
+	</script>
+
+
+    <!-- JoyStick Control
+    <script type="text/javascript">
+		var joyParam = {"title": "joystick", 
+						"autoReturnToCenter": true, 
+						"internalFillColor": "#808080", 
+						"externalStrokeColor": "#A0A0A0", 
+						"externalLineWidth": "7"};
+		var joy = new JoyStick('joyDiv', joyParam);
+
+		function control(x, y){
+			if (x != '0' && y != '0') {
+				var xhttp = new XMLHttpRequest();
+				xhttp.open("GET", "gotocommand?x=" + x +"&y="+y, true); 
+				xhttp.send();
+			}
+		}
+		
+		setInterval(function(){control(joy.GetX(), joy.GetY());}, 20);
+	</script> -->
+
+	<script>
+
+		var stopMoveButton = document.getElementById("stopMoveButton");
+		var forwardMoveButton = document.getElementById("forwardMoveButton");
+		var backMoveButton = document.getElementById("backMoveButton");
+
+		stopMoveButton.onmouseup = function() {
+		   document.getElementById("forwardMoveButton").textContent = " ";
+		   document.getElementById("backMoveButton").textContent = " ";
+		      
+		   var xhttp = new XMLHttpRequest(); 
+		   xhttp.open("GET", "move?id=stop", true); 
+		   xhttp.send();
+		}
+
+		forwardMoveButton.onmouseup = function() {
+		   switch (forwardMoveButton.textContent) {
+		      case ' ': forwardMoveButton.textContent = "^"; break;
+		      case '^': forwardMoveButton.textContent = "⇑"; break;
+		      case '⇑': forwardMoveButton.textContent = "^"; break;
+		   }
+		      
+		   document.getElementById("backMoveButton").textContent = " ";
+		   var xhttp = new XMLHttpRequest(); 
+		   xhttp.open("GET", "move?id=forwardMoveButton", true); 
+		   xhttp.send();
+		}
+
+		backMoveButton.onmouseup = function() {
+		   switch (backMoveButton.textContent) {
+		      case ' ': backMoveButton.textContent = "˅"; break;
+		      case '˅': backMoveButton.textContent = "⇓"; break;
+		      case '⇓': backMoveButton.textContent = "˅"; break;
+		   }
+		   
+		   document.getElementById("forwardMoveButton").textContent = " ";
+		   var xhttp = new XMLHttpRequest(); 
+		   xhttp.open("GET", "move?id=backMoveButton", true); 
+		   xhttp.send();
+		}
+
+		function rightLeftButtonsControl(id) {
+		   var button = document.getElementById(id);
+		   var buttonTimer;
+		   var ifGripped = false;
+
+		   button.onmousedown = function(){
+		       buttonTimer = setTimeout( function(){
+		           var ifPinch = true;
+
+		           var xhttp = new XMLHttpRequest();
+		           xhttp.open("GET", "move?type=grided&id=" + id, true);
+		           xhttp.send();
+		       }, 500);
+		   };
+
+		   button.onmouseup = function(){
+		      learTimeout(buttonTimer);
+
+		      var xhttp = new XMLHttpRequest();
+		      xhttp.open("GET", "move?type=buttonup&id=" + id, true);
+		      xhttp.send();
+
+		      var ifPinch = false;
+		   };
+		}
+
+		rightLeftButtonsControl('leftMoveButton');
+		rightLeftButtonsControl('rightMoveButton');
+
+	</script>
+
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Client {{ ID }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script src="/static/joystick.js"></script>
+</head>
+<body>
+	<div id="videoContainer" style="background-color: #00000000;"><img id="video" src="{{ url_for('videostream') }}" style="{{imgscale}}"></div>
+
+	<!-- Active button -->
+	<button type="button" style="border: none; border-radius: 7px; background: #606060; cursor: pointer; font-weight: bold; width: 5%; height: 12%; position: absolute; top: 4%; left: 2.5%;" onclick="window.location.href = '/openclosecontrolmenu?width=' + String(window.innerWidth) + '&height=' + String(window.innerHeight);"></button>
+
+</body>
+</html>
